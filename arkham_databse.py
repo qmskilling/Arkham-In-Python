@@ -21,7 +21,7 @@ c = con.cursor()
 
 c.execute('DROP TABLE monsters') #drops monsters table; useful in debugging comment/uncomment as needed
 c.execute('DROP TABLE characters') #drops monsters table; useful in debugging comment/uncomment as needed
-
+c.execute('DROP TABLE items') #drops monsters table; useful in debugging comment/uncomment as needed
 
 c.execute('''CREATE TABLE monsters
 (id int PRIMARY KEY,
@@ -52,6 +52,9 @@ c.execute("INSERT INTO monsters VALUES (2,'Zombie','Black','moon', 1,-1,-1,1,2,1
 c.execute("INSERT INTO monsters VALUES (3,'Ghoul','Black','hexagon',-3,0,-1,1,1,1,0,0,1,0,0,0,0,0,0,0)")
 
 con.commit()
+
+
+
 ######## INCOMPLETE #######
 ######## INCOMPLETE #######
 #Impletment:items, abilities,#
@@ -83,6 +86,23 @@ c.execute("INSERT INTO characters VALUES (3, 'Sister Mary', 'the Nun', 'South Ch
 
 con.commit()
 
+
+c.execute('''CREATE TABLE items
+(id int PRIMARY KEY,
+name text,
+type text,
+is_weapon int,
+combat_bonus int,
+is_tome int,
+discard_on_use int
+)''')
+
+
+c.execute("INSERT INTO items VALUES (1, 'Holy Water', 'unique', 1,6,0,1)")
+c.execute('INSERT INTO items VALUES (2, "Dynamite", "common", 1,8,0,1)')
+c.execute("INSERT INTO items VALUES (3, 'Tommy Gun', 'common', 1,6,0,0)")
+
+con.commit()
 con.close()
 
 
@@ -150,11 +170,12 @@ class character:
             self.max_luck = spawn[8]
             self.max_sanity = spawn[9]
             self.max_stamina = spawn[10]
+    
 
 
-sister_mary = character('Sister Mary')
-print(sister_mary.name)
-print(sister_mary.title)
+player1 = character('Sister Mary')
+print(player1.name)
+print(player1.title)
 
 
 rando_character = character()
@@ -164,8 +185,72 @@ print(rando_character.home)
 
 
 
+class item:
+    def __init__(self, name='NULL'):
+        conn = sqlite3.connect('arkham.db')
+        cursor = conn.cursor()
+        if name == 'NULL':
+            cursor.execute('SELECT MAX(id) FROM items')
+            mons = (random.randint(1,cursor.fetchone()[0]),)
+            cursor.execute('SELECT * FROM items WHERE id = ?', mons)
+        else:
+            t =(name,)
+            mons = cursor.execute('Select * FROM items WHERE name = ?', t)
+        spawn = cursor.fetchone()
+        conn.close()
+        self.name =spawn[1]
+        self.type =spawn[2]
+        self.is_weapon = spawn[3]
+        
+        
+            
+        
+item1 = item()
+print(item1.name)
+print(item1.type)
+
+print(item1.is_weapon)
 
 
+class inventory:
+    def __init__(self, character):
+        self.character = character.name
+        self.contents = []
+        self.size = len(self.contents)
+    
+    def add_item(self, item):
+        self.contents.append(item.name)
+    
+    def display(self):
+        if self.contents == []:
+            print(self.character, " has no items.")
+        for i in self.contents:
+            print(i)
+            
+    def remove_item(self, item):
+        self.contents.remove(item.name)
+    
+    
+        
+    
+        
 
 
+inventory1 = inventory(player1)
+                  
+inventory1.display()
 
+inventory1.add_item(item1)
+inventory1.add_item(item1)
+inventory1.add_item(item1)
+
+
+inventory1.display()
+    
+    
+    
+    
+    
+    
+    
+            
