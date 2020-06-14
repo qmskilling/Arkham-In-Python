@@ -19,8 +19,9 @@ con = sqlite3.connect('arkham.db')
 c = con.cursor()
 
 
-c.execute('DROP TABLE monsters') #drops monsters table; useful in debugging
-c.execute('DROP TABLE prac')
+c.execute('DROP TABLE monsters') #drops monsters table; useful in debugging comment/uncomment as needed
+c.execute('DROP TABLE characters') #drops monsters table; useful in debugging comment/uncomment as needed
+
 
 c.execute('''CREATE TABLE monsters
 (id int PRIMARY KEY,
@@ -51,16 +52,35 @@ c.execute("INSERT INTO monsters VALUES (2,'Zombie','Black','moon', 1,-1,-1,1,2,1
 c.execute("INSERT INTO monsters VALUES (3,'Ghoul','Black','hexagon',-3,0,-1,1,1,1,0,0,1,0,0,0,0,0,0,0)")
 
 con.commit()
+######## INCOMPLETE #######
+######## INCOMPLETE #######
+#Impletment:items, abilities,#
+######## INCOMPLETE #######
+######## INCOMPLETE #######
 
-c.execute('''CREATE TABLE prac
+c.execute('''CREATE TABLE characters
 (id int PRIMARY KEY,
 name text,
-color text)''')
+title text,
+home text,
+money int,
+clue_tokens int,
+focus int,
+max_speed int,
+max_sneak int,
+max_fight int,
+max_will int,
+max_lore int,
+max_luck int,
+max_sanity int,
+max_stamina int
+)''')
 
 
-c.execute("INSERT INTO prac VALUES (1,'First','b')")
-c.execute("INSERT INTO prac VALUES (2,'2nd','r')")
-c.execute("INSERT INTO prac VALUES (3,'third','r')")
+c.execute("INSERT INTO characters VALUES (1, 'Carolyn Fern', 'the Psychologist', 'Arkham Asylum',7,1,2,3,3,4,4,5,5,6,4)")
+c.execute('INSERT INTO characters VALUES (2, "Michael McGlen", "the Gangster", "Ma\'s Boarding House",8,0,1,5,4,6,4,3,3,3,7)')
+c.execute("INSERT INTO characters VALUES (3, 'Sister Mary', 'the Nun', 'South Church',0,0,1,4,4,3,4,4,6,7,3)")
+
 con.commit()
 
 con.close()
@@ -93,16 +113,59 @@ class monster:
             self.toughness = spawn[9]
             
             
-# use monster() to generate a random monster
-
-             
- #use monster('name') to generate a specific mosnter
- 
+# use monster() to generate a random monster  
+#use monster('name') to generate a specific mosnter
 #Example:
-
-    
-
-
 zombie = monster('Zombie')
 print(zombie.name)
 print("Zombie's have a toughness of %i" % zombie.toughness)
+
+
+
+
+class character:
+    def __init__(self, name='NULL'):
+            conn = sqlite3.connect('arkham.db')
+            cursor = conn.cursor()
+            if name == 'NULL':
+                cursor.execute('SELECT MAX(id) FROM characters')
+                mons = (random.randint(1,cursor.fetchone()[0]),)
+                cursor.execute('SELECT * FROM characters WHERE id = ?', mons)
+            else:
+                t =(name,)
+                mons = cursor.execute('Select * FROM characters WHERE name = ?', t)
+            spawn = cursor.fetchone()
+            conn.close()
+            self.name = spawn[1]
+            self.title = spawn[2]
+            self.home = spawn[3]
+            self.money = spawn[4]
+            self.clue_tokens = spawn[5]
+            self.focus = spawn[6]
+            self.max_speed = spawn[7]
+            self.max_sneak = spawn[8]
+            self.max_fight = spawn[9]
+            self.max_will = spawn[10]
+            self.max_lore = spawn[7]
+            self.max_luck = spawn[8]
+            self.max_sanity = spawn[9]
+            self.max_stamina = spawn[10]
+
+
+sister_mary = character('Sister Mary')
+print(sister_mary.name)
+print(sister_mary.title)
+
+
+rando_character = character()
+print(rando_character.name)
+print(rando_character.title)
+print(rando_character.home)
+
+
+
+
+
+
+
+
