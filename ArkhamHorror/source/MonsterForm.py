@@ -6,13 +6,16 @@ from PyQt5.QtGui import QPixmap
 import sys
 
 """
-Monster form submission v 1.0
+Monster form submission v 1.1
 This code will create a GUI to submit a new monster.
 
-In this version (v 1.0):
+In this version (v1.1):
 A GUI will prompt user for monster information, including images to be used for monster tokens.
 Upon submitting data, it is saved to a dictionary and printed to the console.
 Only one monster can be submitted at this time (due to nature of python dictionaries).
+
+***UPDATES SINCE v1.0***
+Added resistances & immunities to their own group box
 
 For future versions:
 Connect to monster database.
@@ -65,6 +68,7 @@ class Window(QDialog):
         #input for monster abilities
         self.monstAbilities()
         vbox.addWidget(self.abil_groupBox)
+        vbox.addWidget(self.immun_groupBox)
 
         #Input for modifiers (horror, combat, etc)
         self.monstMods()
@@ -150,15 +154,22 @@ class Window(QDialog):
         
         #Another group box to separate data.
         self.abil_groupBox = QGroupBox('Monster Abilities')
+        self.immun_groupBox = QGroupBox("Resistances")        
         gridLayout = QGridLayout()
+        gridLayout_res = QGridLayout()
 
         #Creates checkboxes for the abilities. Each monster can have any number of abilities.
         self.abilities = ['Nightmarish','Overwhelming','Special','Ambush','Mask','Undead']
+        self.resistances = ['Magical Resistance','Magical Immunity','Physical Resistance','Physical Immunity','Weapon Immunity']
         self.abil_cb = [None]*len(self.abilities)
+        self.res_cb = [None]*len(self.resistances)
 
         for i in range(len(self.abilities)):
             self.abil_cb[i] = QCheckBox(self.abilities[i])
             gridLayout.addWidget(self.abil_cb[i], 0, i, 1, 1)
+            if(i < len(self.resistances)):
+                self.res_cb[i] = QCheckBox(self.resistances[i])
+                gridLayout_res.addWidget(self.res_cb[i],0,i,1,1)
 
         #Text input for Nightmarish value. Only positive numbers should be input, but this feature needs to be added.
         self.nightBox = QLineEdit()
@@ -180,9 +191,10 @@ class Window(QDialog):
         self.abil_specBox.setEnabled(False)
         self.abil_cb[2].stateChanged.connect(self.abil_enableTB)
         gridLayout.addWidget(self.abil_specBox, 1, 2, 1, len(self.abilities)-2)
-
+        
         #Adds all objects to the grid
         self.abil_groupBox.setLayout(gridLayout)
+        self.immun_groupBox.setLayout(gridLayout_res)
 
     def abil_enableTB(self):
         """
@@ -348,6 +360,10 @@ class Window(QDialog):
                     abilVec.append(self.abil_specBox.text())
                 else:
                     abilVec.append(self.abilities[i])
+        
+        for i in range(len(self.res_cb)):
+            if(self.res_cb[i].isChecked()):
+                abilVec.append(self.resistances[i])
         
         #Saves monster abilities to the dictionary
         monsterAttributes["Abilities"] = abilVec
